@@ -1,0 +1,58 @@
+<ServerManagerConfiguration>
+   <ProxyGroup name="filters">
+      <!-- ==================================================================== -->
+      <SourceProxy name="vtkHausdorffDistancePointSetFilter" class="vtkHausdorffDistancePointSetFilter" label="Hausdorff Distance">
+         <Documentation
+                       long_help=""
+                       short_help="">
+         </Documentation>
+         
+         <InputProperty
+                       name="Input"
+                       command="SetInputConnection">
+            <ProxyGroupDomain name="groups">
+               <Group name="sources"/>
+               <Group name="filters"/>
+            </ProxyGroupDomain>
+            <DataTypeDomain name="input_type">
+               <DataType value="vtkPointSet"/>
+            </DataTypeDomain>
+         </InputProperty>
+         
+         <InputProperty
+                       name="InputB"
+                       command="SetInputConnection"
+                       port_index="1">
+            <ProxyGroupDomain name="groups">
+               <Group name="sources"/>
+               <Group name="filters"/>
+            </ProxyGroupDomain>
+            <DataTypeDomain name="input_type">
+               <DataType value="vtkPointSet"/>
+            </DataTypeDomain>
+         </InputProperty>
+
+         <IntVectorProperty
+                           name="TargetDistanceMethod"
+                           label="TargetDistanceMethod"
+                           number_of_elements="1"
+                           command="SetTargetDistanceMethod"
+                           default_values="1" >
+            <EnumerationDomain name="enum">
+               <Entry value="0" text="Point-to-Point" />
+               <Entry value="1" text="Point-to-Cell" />
+            </EnumerationDomain>
+            <Documentation>
+
+            </Documentation>
+         </IntVectorProperty>
+
+
+         <OutputPort name="OutputA" index="0" />
+         <OutputPort name="OutputB" index="1" />
+      </SourceProxy>
+      <!-- End HausdorffDistancePointSetFilter -->
+   </ProxyGroup>
+   <!-- End Filter Group -->
+</ServerManagerConfiguration>
+

@@ -1,0 +1,207 @@
+%
+% Complete documentation on the extended LaTeX markup used for Insight
+% documentation is available in ``Documenting Insight'', which is part
+% of the standard documentation for Insight.  It may be found online
+% at:
+%
+%     http://www.itk.org/
+
+\documentclass{InsightArticle}
+
+\usepackage[dvips]{graphicx}
+\usepackage{subfigure}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%  hyperref should be the last package to be loaded.
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage[dvips,
+bookmarks,
+bookmarksopen,
+backref,
+colorlinks,linkcolor={blue},citecolor={blue},urlcolor={blue},
+]{hyperref}
+
+
+%  This is a template for Papers to the Insight Journal. 
+%  It is comparable to a technical report format.
+
+% The title should be descriptive enough for people to be able to find
+% the relevant document. 
+\title{A VTK Algorithm Dedicated to the Computation of the Hausdorff Distance}
+
+% 
+% NOTE: This is the last number of the "handle" URL that 
+% The Insight Journal assigns to your paper as part of the
+% submission process. Please replace the number "1338" with
+% the actual handle number that you get assigned.
+%
+\newcommand{\IJhandlerIDnumber}{3251}
+
+% Increment the release number whenever significant changes are made.
+% The author and/or editor can define 'significant' however they like.
+\release{0.00}
+
+% At minimum, give your name and an email address.  You can include a
+% snail-mail address if you like.
+\author{Fr\'{e}d\'{e}ric Commandeur, J\'er\^ome Velut, Oscar Acosta}
+\authoraddress{INSERM, U 642, Rennes, F-35000, France \\ Universit\'e de Rennes 1, LTSI, F-35000, France\\  frederic.commandeur@univ-rennes1.fr}
+% Ce n'est pas pro si l'on laisse juste gmail
+
+\begin{document}
+
+%
+% Add hyperlink to the web location and license of the paper.
+% The argument of this command is the handler identifier given
+% by the Insight Journal to this paper.
+% 
+\IJhandlefooter{\IJhandlerIDnumber}
+
+
+\ifpdf
+\else
+   %
+   % Commands for including Graphics when using latex
+   % 
+   \DeclareGraphicsExtensions{.eps,.jpg,.gif,.tiff,.bmp,.png}
+   \DeclareGraphicsRule{.jpg}{eps}{.jpg.bb}{`convert #1 eps:-}
+   \DeclareGraphicsRule{.gif}{eps}{.gif.bb}{`convert #1 eps:-}
+   \DeclareGraphicsRule{.tiff}{eps}{.tiff.bb}{`convert #1 eps:-}
+   \DeclareGraphicsRule{.bmp}{eps}{.bmp.bb}{`convert #1 eps:-}
+   \DeclareGraphicsRule{.png}{eps}{.png.bb}{`convert #1 eps:-}
+\fi
+
+
+\maketitle
+
+
+\ifhtml
+\chapter*{Front Matter\label{front}}
+\fi
+
+
+% The abstract should be a paragraph or two long, and describe the
+% scope of the document.
+\begin{abstract}
+\noindent
+
+The Hausdorff distance provides a measure of the farthest distance between sets. There are many advantages in using this metric compared to other similariry maesures. This document describes a VTK class for computing the Hausdorff Distance between two set of points. The main contribution, compared to other implementations, lies in the definition of the distance not only to the closest point but to the closest surface point. This yields an accurate measure even between undersampling surfaces. After introducing the interest of this distance, the VTK code is explained and illustrated with some examples. Furthermore, a ParaView plugin was implemented, which is also available with the code.
+
+\end{abstract}
+
+\IJhandlenote{\IJhandlerIDnumber}
+
+\tableofcontents
+
+%
+\section{Hausdorff Distance: theoretical background}
+The Hausdorff distance is a topological tool used in many applications. It can be used as a similarity measure for detection and tracking~\cite{Gastaldo:2002}, registration~\cite{Zhang:2005} or validation~\cite{Klein2010}. As it is based on the Euclidean norm it is dimension-independant. It is always positive and it is zero only when the shapes to be compared are the same. Our implementation builds upon the defintion poposed in~\cite{ASP02} as follows
+
+%
+
+\subsection{Point to surface and surface to surface distance definition}
+
+Let $S_1$ and $S_2$ the two surfaces to be compared. Thus, the distance from a point $p_1 \in S_1$ to $S_2$ is defined as 
+
+\begin{equation}
+  d(p_1,S_2) = \min_{p_2 \in S_2} ||p_1 - p_2||
+\end{equation}
+
+where $|| . ||$ corresponds to the Euclidean norm. 
+
+% \begin{math}|| . ||\end{math} corresponds to the Euclidean norm.
+
+
+\subsection{Relative distances between two surfaces}
+The surface to surface distance corresponds to the maximum from one to the other as 
+\begin{equation}
+  d(S1,S2) = \max_{p1 \in S1}  d(p1,S2)
+\end{equation}
+Since, this distance is not symmetrical,
+\begin{equation}
+  d(S1,S2) \ne d(S2,S1)
+\end{equation}
+
+
+\subsection{Hausdorff Distance}
+Consequently, the Hausdorff distance is the maximum of the two relative distances.
+\begin{equation}
+  \max [d(S1,S2),d(S2,S1)]
+\end{equation}
+
+\section{VTK Implementation}
+
+We created two array in the \verb!FieldData! of both outputs, that correspond to the Hausdorff distance and the Relative distance form one input to the other. We also create an array thats represent the distance from each point to the other surface, in the \verb!PointData!.
+
+\subsection{Target distance}
+In VTK, different items exist and can be used in our process. In this class, we propose to compute a point-to-point distance, where each points represent vertices of shapes, or a point-to-cell distance, where cells are polys. The choice can be made by the generic \verb!vtkSetMacro!.
+\begin{verbatim}
+      int TargetDistanceMethod; //!< point-to-point if 0, point-to-cell if 1
+      vtkSetMacro( TargetDistanceMethod, int );
+\end{verbatim}
+The point-to-cell distance offers more accuracy, but we keep the possibilities to compute a point-to-point distance in the case inputs contain no cells.
+
+We illustrate the difference between these two targets, firstly with a sphere and a cube considered as a surface with a sparse sampling. Figures (\ref{Fig:point-to-point_sparse-sampled} and \ref{Fig:point-to-cell_sparse-sampled}) show respectively the point-to-point distance and point-to-cell distance.
+\begin{figure}
+\centering
+ \subfigure[$point\ to\ point$]{\label{Fig:point-to-point_sparse-sampled} \includegraphics[width=0.4\textwidth]{./Figures/point-to-point.png}}
+\hspace{0.1 \textwidth}
+ \subfigure[$point\ to\ cell$]{\label{Fig:point-to-cell_sparse-sampled} \includegraphics[width=0.4\textwidth]{./Figures/point-to-cell.png}}
+\caption{Hausdorff distance computed on sparse sampling}
+\end{figure}
+
+A great difference appears between the two cases. Whereas when both shapes contain a mean sampling, the difference is insignificant, as shown in figures (\ref{Fig:point-to-point_mean-sampled} and \ref{Fig:point-to-cell_mean-sampled}). In the case of inputs are full sampled, represented in figures (\ref{Fig:point-to-point_full-sampled} and \ref{Fig:point-to-cell_full-sampled}, there is no difference between a point-to-point or point-to-cell distance
+%In figures (\ref{Fig:point-to-point_sparse-sampled} and \ref{Fig:point-to-cell_sparse-sampled})  we show the difference between the two distances available. If one input is sparse-sampled, we see an important difference when point-to-point or point-to-cell distance is computed. Whereas in the case both inputs contain a large set of samples, this difference is insignificant, as shown in figures (\ref{Fig:point-to-point_mean-sampled} and \ref{Fig:point-to-cell_mean-sampled}), or inexistant in figures (\ref{Fig:point-to-point_fully-sampled} and \ref{Fig:point-to-cell_fully-sampled}). We can note that for the images , the minimum distance is not zero since there is no points on the intersection of the two spheres.
+
+\begin{figure}
+\centering
+ \subfigure[$point\ to\ point$]{\label{Fig:point-to-point_mean-sampled} \includegraphics[width=0.4\textwidth]{./Figures/point-to-point_mean-sampled.png}}
+\hspace{0.1 \textwidth}
+ \subfigure[$point\ to\ cell$]{\label{Fig:point-to-cell_mean-sampled} \includegraphics[width=0.4\textwidth]{./Figures/point-to-cell_mean-sampled.png}}
+\caption{Hausdorff distance computed on mean sampling}
+\end{figure}
+
+\begin{figure}
+\centering
+ \subfigure[$point\ to\ point$]{\label{Fig:point-to-point_full-sampled} \includegraphics[width=0.4\textwidth]{./Figures/point-to-point_full-sampled.png}}
+\hspace{0.1 \textwidth}
+ \subfigure[$point\ to\ cell$]{\label{Fig:point-to-cell_full-sampled} \includegraphics[width=0.4\textwidth]{./Figures/point-to-cell_full-sampled.png}}
+\caption{Hausdorff distance computed on large sampling}
+\end{figure}
+
+
+
+\subsection{Computational time optimization}
+The computational time is as long as inputs contain a large number of points, since we have, for each point of an input, to find the closest one to the other. To resolve this problem, we use the \verb!FindClosestPoint()! method from \verb!vtkPointLocator! or \verb!vtkCellLocator!, according to the distance selected. The result process is therefore time-efficent.  
+
+%
+\subsection{ParaView plugin}
+The provided class can be build as a ParaView plugin by setting ``BUILD\_PARAVIEW\_PLUGIN'' option to ON during the CMake procedure.
+
+A \verb!vtkHausdorffDistancePointSetFilter! dynamic library will be created in the bin directory where the \verb!ccmake! command was executed. Load it in \verb!"Tools" -> "Manage Plugins" -> "Load New"!. Then you could find a \verb!Hausdorff Distance! menu in which the \verb!vtkHausdorffDistancePointSetFilter! plugin is available.
+%
+
+%
+\section{Software Requirements}
+This software worked with success on Ubuntu 11.04 and ParaView-3.10.1. The version of VTK was the vtk-5.6.1.
+%
+%
+\section{Conclusion}
+We presented a class to compute the Hausdorff distance between two point sets. This distance is appropriate to quantify the similarity of surfaces. The provided class is inherited from \verb!vtkPointSetAlgorithm! and can be executed in command line or as a ParaView plugin.
+%
+%
+\appendix
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%  Insert the bibliography using BibTeX
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\bibliographystyle{plain}
+\bibliography{references}
+
+
+\end{document}
+

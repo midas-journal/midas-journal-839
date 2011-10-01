@@ -1,0 +1,35 @@
+\begin{thebibliography}{1}
+
+\bibitem{ASP02}
+N.~Aspert, D.~Santa-Cruz, and T.~Ebrahimi.
+\newblock Mesh: Measuring errors between surfaces using the hausdorff distance.
+\newblock In {\em Proceedings of the IEEE International Conference on
+  Multimedia and Expo}, volume~I, pages 705 -- 708, 2002.
+\newblock \texttt{http://mesh.epfl.ch}.
+
+\bibitem{Gastaldo:2002}
+P.~Gastaldo and R.~Zunino.
+\newblock Hausdorff distance for target detection.
+\newblock In {\em Circuits and Systems, 2002. ISCAS 2002. IEEE International
+  Symposium on}, volume~5, pages V--661 -- V--664 vol.5, 2002.
+
+\bibitem{HAU18.1}
+Felix Hausdorff.
+\newblock Dimension und \"au\ss eres ma\ss.
+\newblock {\em Mathematische Annalen}, 79:157--179, 1918.
+\newblock 10.1007/BF01457179.
+
+\bibitem{Klein2010}
+Arno Klein, Satrajit~S Ghosh, Brian Avants, B.~T~T Yeo, Bruce Fischl, Babak
+  Ardekani, James~C Gee, J.~J. Mann, and Ramin~V Parsey.
+\newblock Evaluation of volume-based and surface-based brain image registration
+  methods.
+\newblock {\em Neuroimage}, 51(1):214--220, May 2010.
+
+\bibitem{Zhang:2005}
+Jian-Wei Zhang, Guo-Qiang Han, and Yan Wo.
+\newblock Image registration based on generalized and mean hausdorff distances.
+\newblock In {\em Machine Learning and Cybernetics, 2005. Proceedings of 2005
+  International Conference on}, volume~8, pages 5117 --5121 Vol. 8, aug. 2005.
+
+\end{thebibliography}

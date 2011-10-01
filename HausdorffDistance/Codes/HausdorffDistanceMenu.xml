@@ -1,0 +1,5 @@
+<ParaViewFilters>
+  <Category name="HausdorffDistance" menu_label="&amp;Hausdorff Distance">
+    <Filter name="vtkHausdorffDistancePointSetFilter" />
+  </Category>
+</ParaViewFilters>

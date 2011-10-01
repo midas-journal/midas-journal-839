@@ -1,0 +1,108 @@
+###############################################################################
+#                   Hausdorff distance with VTK                               #
+###############################################################################
+
+This Software provides an implementation of the Hausdorff distance between two
+sets of points. Data to compare may be either vtkPointSet or vtkPolyData. A
+plugin for Paraview  is also provided.
+
+
+1) REQUIREMENTS
+2) Build the code
+3) Use Hausdorff in your code
+4) VTKJournal paper
+5) LICENCE
+
+
+1) REQUIREMENTS
+--------------
+
+- VTK-5.x
+- CMake-2.6 or later
+- ParaView-3.10 or later (optional: only if building the ParaView plugin)
+- Doxygen (optional)
+- Latex (optional, only for the VTKJournal paper compilation)
+
+2) Build the code
+-----------------
+
+- Create a destination directory where the binaries are built. It is advised to
+create it external to the code tree (eg. "$me > mkdir ~/Softwares/vtkHausdorff" )
+- Go into this new directory ("$me > cd ~/Softwares/vtkHausdorff")
+- Execute CMake by selecting the code location (ie. where you have the 
+  CMakeLists.txt):
+     "$me > ccmake ~/Codes/HausdorffDistance/Codes/"
+- Choose your options:
+   . "BUILD_EXAMPLE" will add an executable target that computes hausdorff
+     distance from two VTK files
+   . "BUILD_PARAVIEW_PLUGIN" will add a paraview plugin target (in that case,
+     VTK_DIR should point to the VTK from your ParaView binary tree). The 
+     plugin is named "pvHausdorffDistance". Load the libpvHausdorffDistance.so
+     in ParaView through the "Tools/Plugin Manager" menu.
+   . "BUILD_TESTING" (default is on for the VTKJournal) adds a CTest compliant
+     executable, computing hausdorff distances between a smooth sphere and a 
+     noisy one.
+- execute "$me > make". Binary outputs will be found in 
+     "~/Softwares/vtkHausdorff/bin"
+
+3) Use Hausdorff in your code
+-----------------------------
+
+Copy the vtkHausdorffDistancePointSetFilter.cxx/h in your code tree, add
+#include "vtkHausdorffDistancePointSetFilter.h"
+where you want to instantiate the filter. Instantiate as you would with
+any other VTK filter (SmartPointer, New,...).
+
+4) VTKJournal paper
+-------------------
+
+In the "Latex/" folder, you will find the latex code of the associated 
+VTKJournal paper. They may be compiled with pdflatex and bibtex:
+$me > pdflatex document.tex
+$me > bibtex document
+$me > pdflatex document
+$me > pdflatex document
+
+for intermediate files suppression, you can use the Makefile:
+$me > make clean
+
+
+To install floatflt.sty (if needed, Ubuntu style) :
+
+   sudo mkdir -p /usr/share/texmf-texlive/tex/latex/floatflt
+   cd /usr/share/texmf-texlive/tex/latex/floatflt
+   sudo rm -f floatflt.* float*.tex
+   sudo wget http://mirror.ctan.org/macros/latex/contrib/floatflt/floatflt.ins
+   sudo wget http://mirror.ctan.org/macros/latex/contrib/floatflt/floatflt.dtx
+   sudo latex floatflt.ins
+   sudo texhash /usr/share/texmf-texlive
+
+5) LICENCE
+---------
+
+Copyright (c) 2011 LTSI INSERM U642
+All rights reserved.
+ 
+Redistribution and use in source and binary forms, with or without modification,
+are permitted provided that the following conditions are met:
+ 
+    * Redistributions of source code must retain the above copyright notice,
+this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright notice,
+this list of conditions and the following disclaimer in the documentation and/or
+other materials provided with the distribution.
+    * Neither name of LTSI, INSERM nor the names
+of any contributors may be used to endorse or promote products derived from this
+software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS ``AS IS''
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE AUTHORS OR CONTRIBUTORS BE LIABLE FOR ANY
+DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
